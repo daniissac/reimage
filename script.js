@@ -1,33 +1,89 @@
-const imageUpload = document.getElementById('imageUpload');
-const previewImage = document.getElementById('previewImage');
-const optionsContainer = document.getElementById('optionsContainer');
-const resizeBtn = document.getElementById('resizeBtn');
-const cropBtn = document.getElementById('cropBtn');
-const formatBtn = document.getElementById('formatBtn');
+let currentImage = null;
+let cropper = null;
 
-imageUpload.addEventListener('change', function(e) {
+document.getElementById('imageUpload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
 
     reader.onload = function(event) {
-        localStorage.setItem('originalImage', event.target.result);
-        localStorage.setItem('currentImage', event.target.result);
-        previewImage.src = event.target.result;
-        optionsContainer.style.display = 'flex';
+        currentImage = new Image();
+        currentImage.onload = function() {
+            document.getElementById('imagePreview').src = currentImage.src;
+            document.getElementById('imagePreview').style.display = 'block';
+            document.getElementById('editImage').style.display = 'block';
+            document.getElementById('downloadImage').style.display = 'block';
+        }
+        currentImage.src = event.target.result;
     }
+
     reader.readAsDataURL(file);
 });
 
-resizeBtn.addEventListener('click', () => {
-    window.location.href = 'resize.html';
+document.getElementById('editImage').addEventListener('click', function() {
+    document.getElementById('editOptions').style.display = 'block';
 });
 
-cropBtn.addEventListener('click', () => {
-    window.location.href = 'crop.html';
+document.getElementById('editSelect').addEventListener('change', function(e) {
+    const editType = e.target.value;
+    document.getElementById('resizeOptions').style.display = editType === 'resize' ? 'block' : 'none';
+    document.getElementById('cropOptions').style.display = editType === 'crop' ? 'block' : 'none';
+
+    if (editType === 'crop' && !cropper) {
+        cropper = new Cropper(document.getElementById('imagePreview'), {
+            aspectRatio: NaN,
+            viewMode: 1,
+        });
+    } else if (editType !== 'crop' && cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
 });
 
-formatBtn.addEventListener('click', () => {
-    window.location.href = 'format.html';
+document.getElementById('applyEdit').addEventListener('click', function() {
+    const editType = document.getElementById('editSelect').value;
+    const format = document.getElementById('formatSelect').value;
+
+    if (editType === 'resize') {
+        const width = parseInt(document.getElementById('width').value);
+        const height = parseInt(document.getElementById('height').value);
+        resizeImage(width, height);
+    } else if (editType === 'crop') {
+        cropImage();
+    }
+
+    // Apply format change here
+});
+
+function resizeImage(width, height) {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(currentImage, 0, 0, width, height);
+    updateImage(canvas);
+}
+
+function cropImage() {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas();
+        updateImage(canvas);
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+function updateImage(canvas) {
+    const format = document.getElementById('formatSelect').value;
+    currentImage.src = canvas.toDataURL(`image/${format}`);
+    document.getElementById('imagePreview').src = currentImage.src;
+}
+
+document.getElementById('downloadImage').addEventListener('click', function() {
+    const format = document.getElementById('formatSelect').value;
+    const link = document.createElement('a');
+    link.download = `edited_image.${format}`;
+    link.href = currentImage.src;
+    link.click();
 });
 
 const editBtn = document.getElementById('editBtn');
