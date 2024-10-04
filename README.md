@@ -1,14 +1,11 @@
 # Reimage
 
-Reimage is a streamlined, browser-based image manipulation web app that allows users to resize and crop their images in one integrated interface. Built with vanilla JavaScript, HTML, and CSS, Reimage provides an intuitive experience for basic image editing tasks.
+Reimage is a streamlined, browser-based image manipulation web app. Built with vanilla JavaScript, HTML, and CSS, Reimage provides an intuitive experience for basic image editing tasks.
 
 ## Features
 
 - **Image Upload**: Upload your images directly in the browser.
-- **Integrated Resize and Crop**:
-  - Adjust image dimensions using pixels, centimeters, or inches.
-  - Interactive cropping with a draggable and resizable crop box.
-  - Apply both resize and crop operations in any order.
+- **Image Editing**: Resize and crop your images with ease.
 - **Multiple Edits**: Apply multiple edits to an image before downloading.
 - **Responsive Design**: Works on both desktop and mobile devices.
 
