@@ -52,6 +52,13 @@ document.getElementById('applyEdit').addEventListener('click', function() {
     }
 
     // Apply format change here
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = currentImage.width;
+    canvas.height = currentImage.height;
+    ctx.drawImage(currentImage, 0, 0);
+    currentImage.src = canvas.toDataURL(`image/${format}`);
+    document.getElementById('imagePreview').src = currentImage.src;
 });
 
 function resizeImage(width, height) {
