@@ -12,9 +12,12 @@
 <body>
     <div class="container">
         <h1>Reimage</h1>
-        <div class="upload-section">
+        <div class="upload-section" id="uploadArea">
             <input type="file" id="imageUpload" accept="image/*" multiple>
-            <label for="imageUpload" class="upload-btn">Choose Files</label>
+            <label for="imageUpload" class="upload-label">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text">Drag & drop images here or click to upload</span>
+            </label>
         </div>
         <div id="imagePreview" class="image-preview"></div>
         <div id="editingInterface" class="editing-interface">

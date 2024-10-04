@@ -117,3 +117,34 @@ button:hover {
       max-width: 300px;
       margin-bottom: 10px;
 }
+
+.upload-section {
+    border: 2px dashed #3498db;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.upload-label {
+    display: block;
+    cursor: pointer;
+}
+
+.upload-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.upload-text {
+    font-size: 18px;
+}
+
+.upload-section.dragover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+#imageUpload {
+    display: none;
+}

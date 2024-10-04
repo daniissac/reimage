@@ -224,29 +224,39 @@ if ('serviceWorker' in navigator) {
       .catch(error => console.log('ServiceWorker registration failed:', error));
   });
 }
+const uploadArea = document.getElementById('uploadArea');
+const imageUpload = document.getElementById('imageUpload');
 
-const dropZone = document.createElement('div');
-dropZone.id = 'dropZone';
-dropZone.textContent = 'Drag and drop images here';
-document.querySelector('.upload-section').appendChild(dropZone);
-
-dropZone.addEventListener('dragover', (e) => {
+uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    dropZone.classList.add('dragover');
+    uploadArea.classList.add('dragover');
 });
 
-dropZone.addEventListener('drop', (e) => {
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    dropZone.classList.remove('dragover');
+    uploadArea.classList.remove('dragover');
     handleImageUpload({ target: { files: e.dataTransfer.files } });
 });
+
+imageUpload.addEventListener('change', handleImageUpload);
+
+function handleImageUpload(e) {
+    images = Array.from(e.target.files);
+    displayImagePreviews();
+    if (images.length > 0) {
+        loadImageForEditing(0);
+    }
+}
 
 function updateProgressBar(progress) {
     const progressBar = document.getElementById('progressBar');
     progressBar.style.width = `${progress}%`;
     progressBar.textContent = `${progress}%`;
 }
-
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === 'z') undo();
     if (e.ctrlKey && e.key === 'y') redo();
