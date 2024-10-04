@@ -2,68 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reimage - Image Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reimage</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3498db">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Reimage</h1>
-        <div class="upload-section" id="uploadArea">
-            <input type="file" id="imageUpload" accept="image/*" multiple>
-            <label for="imageUpload" class="upload-label">
-                <span class="upload-icon">📁</span>
-                <span class="upload-text">Drag & drop images here or click to upload</span>
-            </label>
-        </div>
-        <div id="imagePreview" class="image-preview"></div>
-        <div id="editingInterface" class="editing-interface">
-            <div class="edit-controls">
-                <select id="formatSelect">
-                    <option value="image/jpeg">JPEG</option>
-                    <option value="image/png">PNG</option>
-                    <option value="image/webp">WebP</option>
-                </select>
-                <select id="editTypeSelect">
-                    <option value="resize">Resize</option>
-                    <option value="crop">Crop</option>
-                </select>
-                <div id="resizeControls">
-                    <input type="number" id="widthInput" placeholder="Width">
-                    <input type="number" id="heightInput" placeholder="Height">
-                </div>
-                <div id="cropControls">
-                    <select id="aspect-ratio-select">
-                        <option value="1:1">Instagram Post (1:1)</option>
-                        <option value="16:9">Twitter Header (16:9)</option>
-                        <option value="4:5">Instagram Portrait (4:5)</option>
-                        <option value="free">Free</option>
-                    </select>
-                </div>
-                <div id="text-overlay-controls">
-                    <input type="text" id="overlay-text" placeholder="Enter text">
-                    <select id="font-select">
-                        <option value="Arial">Arial</option>
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Times New Roman">Times New Roman</option>
-                    </select>
-                    <input type="number" id="font-size" min="8" max="72" value="24">
-                    <input type="color" id="font-color" value="#000000">
-                </div>
-                <button id="applyEdit">Apply Edit</button>
-                <button id="undoBtn">Undo</button>
-                <button id="redoBtn">Redo</button>
-                <button id="applyToAllBtn">Apply to All</button>
-            </div>
+    <div class="app-container">
+        <header>
+            <h1>Reimage</h1>
+        </header>
+        <main>
             <div id="imageContainer"></div>
-        </div>
-        <div class="download-section">
-            <input type="range" id="quality-slider" min="0" max="1" step="0.1" value="0.8">
-            <label for="quality-slider">Export Quality: <span id="qualityValue">0.8</span></label>
-            <button id="downloadBtn">Download</button>
+            <div id="toolbarContainer">
+                <div id="toolbar">
+                    <button id="uploadBtn">Upload</button>
+                    <button id="cropBtn">Crop</button>
+                    <button id="resizeBtn">Resize</button>
+                    <button id="textBtn">Text</button>
+                    <button id="filterBtn">Filter</button>
+                    <button id="formatBtn">Format</button>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <button id="undoBtn">Undo</button>
+            <button id="redoBtn">Redo</button>
+            <button id="downloadBtn">Save</button>
+        </footer>
+    </div>
+    <input type="file" id="imageUpload" accept="image/*" multiple hidden>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <div id="modalContent"></div>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>

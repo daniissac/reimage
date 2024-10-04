@@ -1,150 +1,116 @@
-* {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.container {
+.app-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    height: 100%;
+}
+
+header {
+    background-color: #3498db;
+    color: white;
+    text-align: center;
+    padding: 10px;
 }
 
 h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    margin: 0;
+    font-size: 20px;
 }
 
-button, .upload-btn {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-.image-preview {
+main {
+    flex-grow: 1;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 20px 0;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.image-preview img {
-    max-width: 100px;
-    max-height: 100px;
-    margin: 5px;
-    object-fit: cover;
-}
-
-.editing-interface {
-    width: 100%;
-}
-
-.edit-controls {
+#imageContainer {
+    flex-grow: 1;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 20px;
-}
-
-select, input[type="number"], input[type="text"], input[type="color"] {
-    margin: 5px;
-    padding: 5px;
+    align-items: center;
+    overflow: hidden;
 }
 
 #imageContainer img {
     max-width: 100%;
-    height: auto;
+    max-height: 100%;
+    object-fit: contain;
 }
 
-@media (max-width: 600px) {
-    body {
-      padding: 10px;
-    }
+#toolbarContainer {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+    background-color: #f1f1f1;
 }
 
-.upload-btn:hover {
-      background-color: #2980b9;
+#toolbar {
+    display: inline-flex;
 }
 
-#imageUpload {
-      display: none;
+#toolbar button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
 }
 
-.image-preview img.selected {
-      border-color: #3498db;
+footer {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background-color: #f1f1f1;
 }
 
-.editing-interface {
-      background-color: #fff;
-      border-radius: 5px;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+footer button {
+    padding: 10px 20px;
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
-button:hover {
-      background-color: #27ae60;
-}
-
-#imageContainer {
-      max-width: 100%;
-      margin-top: 20px;
-}
-
-.download-section {
-      margin-top: 20px;
-      text-align: center;
-}
-
-#quality-slider {
-      width: 100%;
-      max-width: 300px;
-      margin-bottom: 10px;
-}
-
-.upload-section {
-    border: 2px dashed #3498db;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-    transition: background-color 0.3s;
-}
-
-.upload-label {
-    display: block;
-    cursor: pointer;
-}
-
-.upload-icon {
-    font-size: 48px;
-    display: block;
-    margin-bottom: 10px;
-}
-
-.upload-text {
-    font-size: 18px;
-}
-
-.upload-section.dragover {
-    background-color: rgba(52, 152, 219, 0.1);
-}
-
-#imageUpload {
+.modal {
     display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
