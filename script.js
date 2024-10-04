@@ -1,102 +1,218 @@
-let currentImage = null;
-let cropper = null;
+let images = [];
+let currentImageIndex = 0;
+let editHistory = [[]];
+let currentEditIndex = -1;
+let cropper;
 
-document.getElementById('imageUpload').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+const imageUpload = document.getElementById('imageUpload');
+const imagePreview = document.getElementById('imagePreview');
+const editingInterface = document.getElementById('editingInterface');
+const imageContainer = document.getElementById('imageContainer');
+const formatSelect = document.getElementById('formatSelect');
+const editTypeSelect = document.getElementById('editTypeSelect');
+const resizeControls = document.getElementById('resizeControls');
+const cropControls = document.getElementById('cropControls');
+const widthInput = document.getElementById('widthInput');
+const heightInput = document.getElementById('heightInput');
+const applyEditBtn = document.getElementById('applyEdit');
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+const applyToAllBtn = document.getElementById('applyToAllBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const qualitySlider = document.getElementById('quality-slider');
+const qualityValue = document.getElementById('qualityValue');
+const aspectRatioSelect = document.getElementById('aspect-ratio-select');
+const overlayText = document.getElementById('overlay-text');
+const fontSelect = document.getElementById('font-select');
+const fontSize = document.getElementById('font-size');
+const fontColor = document.getElementById('font-color');
 
-    reader.onload = function(event) {
-        currentImage = new Image();
-        currentImage.onload = function() {
-            document.getElementById('imagePreview').src = currentImage.src;
-            document.getElementById('imagePreview').style.display = 'block';
-            document.getElementById('editImage').style.display = 'block';
-            document.getElementById('downloadImage').style.display = 'block';
-        }
-        currentImage.src = event.target.result;
+imageUpload.addEventListener('change', handleImageUpload);
+editTypeSelect.addEventListener('change', toggleEditControls);
+applyEditBtn.addEventListener('click', applyEdit);
+undoBtn.addEventListener('click', undo);
+redoBtn.addEventListener('click', redo);
+applyToAllBtn.addEventListener('click', applyToAll);
+downloadBtn.addEventListener('click', downloadImage);
+qualitySlider.addEventListener('input', updateQualityValue);
+aspectRatioSelect.addEventListener('change', updateCropAspectRatio);
+
+function handleImageUpload(e) {
+    images = Array.from(e.target.files);
+    displayImagePreviews();
+    if (images.length > 0) {
+        loadImageForEditing(0);
     }
+}
 
-    reader.readAsDataURL(file);
-});
+function displayImagePreviews() {
+    imagePreview.innerHTML = '';
+    images.forEach((image, index) => {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(image);
+        img.onclick = () => loadImageForEditing(index);
+        imagePreview.appendChild(img);
+    });
+}
 
-document.getElementById('editImage').addEventListener('click', function() {
-    document.getElementById('editOptions').style.display = 'block';
-});
+function loadImageForEditing(index) {
+    currentImageIndex = index;
+    const img = document.createElement('img');
+    img.src = URL.createObjectURL(images[index]);
+    img.onload = () => {
+        imageContainer.innerHTML = '';
+        imageContainer.appendChild(img);
+        editingInterface.style.display = 'block';
+        initCropper();
+        saveEdit();
+    };
+}
 
-document.getElementById('editSelect').addEventListener('change', function(e) {
-    const editType = e.target.value;
-    document.getElementById('resizeOptions').style.display = editType === 'resize' ? 'block' : 'none';
-    document.getElementById('cropOptions').style.display = editType === 'crop' ? 'block' : 'none';
-
-    if (editType === 'crop' && !cropper) {
-        cropper = new Cropper(document.getElementById('imagePreview'), {
-            aspectRatio: NaN,
-            viewMode: 1,
-        });
-    } else if (editType !== 'crop' && cropper) {
+function initCropper() {
+    if (cropper) {
         cropper.destroy();
-        cropper = null;
     }
-});
+    cropper = new Cropper(imageContainer.firstChild, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 1,
+    });
+}
 
-document.getElementById('applyEdit').addEventListener('click', function() {
-    const editType = document.getElementById('editSelect').value;
-    const format = document.getElementById('formatSelect').value;
+function toggleEditControls() {
+    const editType = editTypeSelect.value;
+    resizeControls.style.display = editType === 'resize' ? 'block' : 'none';
+    cropControls.style.display = editType === 'crop' ? 'block' : 'none';
+}
 
+function applyEdit() {
+    const editType = editTypeSelect.value;
     if (editType === 'resize') {
-        const width = parseInt(document.getElementById('width').value);
-        const height = parseInt(document.getElementById('height').value);
-        resizeImage(width, height);
+        resizeImage();
     } else if (editType === 'crop') {
         cropImage();
     }
+    addTextOverlay();
+    saveEdit();
+}
 
-    // Apply format change here
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = currentImage.width;
-    canvas.height = currentImage.height;
-    ctx.drawImage(currentImage, 0, 0);
-    currentImage.src = canvas.toDataURL(`image/${format}`);
-    document.getElementById('imagePreview').src = currentImage.src;
-});
-
-function resizeImage(width, height) {
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(currentImage, 0, 0, width, height);
-    updateImage(canvas);
+function resizeImage() {
+    const width = parseInt(widthInput.value);
+    const height = parseInt(heightInput.value);
+    cropper.setCropBoxData({ width, height });
+    const canvas = cropper.getCroppedCanvas({ width, height });
+    replaceImage(canvas);
 }
 
 function cropImage() {
-    if (cropper) {
-        const canvas = cropper.getCroppedCanvas();
-        updateImage(canvas);
-        cropper.destroy();
-        cropper = null;
+    const canvas = cropper.getCroppedCanvas();
+    replaceImage(canvas);
+}
+
+function replaceImage(canvas) {
+    const img = new Image();
+    img.src = canvas.toDataURL(formatSelect.value);
+    img.onload = () => {
+        imageContainer.innerHTML = '';
+        imageContainer.appendChild(img);
+        initCropper();
+    };
+}
+
+function addTextOverlay() {
+    const canvas = cropper.getCroppedCanvas();
+    const ctx = canvas.getContext('2d');
+    ctx.font = `${fontSize.value}px ${fontSelect.value}`;
+    ctx.fillStyle = fontColor.value;
+    ctx.fillText(overlayText.value, 10, 50);
+    replaceImage(canvas);
+}
+
+function saveEdit() {
+    currentEditIndex++;
+    editHistory[currentImageIndex] = editHistory[currentImageIndex] || [];
+    editHistory[currentImageIndex] = editHistory[currentImageIndex].slice(0, currentEditIndex);
+    editHistory[currentImageIndex].push(imageContainer.firstChild.src);
+}
+
+function undo() {
+    if (currentEditIndex > 0) {
+        currentEditIndex--;
+        loadHistoryState();
     }
 }
 
-function updateImage(canvas) {
-    const format = document.getElementById('formatSelect').value;
-    currentImage.src = canvas.toDataURL(`image/${format}`);
-    document.getElementById('imagePreview').src = currentImage.src;
+function redo() {
+    if (currentEditIndex < editHistory[currentImageIndex].length - 1) {
+        currentEditIndex++;
+        loadHistoryState();
+    }
 }
 
-document.getElementById('downloadImage').addEventListener('click', function() {
-    const format = document.getElementById('formatSelect').value;
+function loadHistoryState() {
+    const img = new Image();
+    img.src = editHistory[currentImageIndex][currentEditIndex];
+    img.onload = () => {
+        imageContainer.innerHTML = '';
+        imageContainer.appendChild(img);
+        initCropper();
+    };
+}
+
+function applyToAll() {
+    const currentCanvas = cropper.getCroppedCanvas();
+    images.forEach((image, index) => {
+        if (index !== currentImageIndex) {
+            const img = new Image();
+            img.src = URL.createObjectURL(image);
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = currentCanvas.width;
+                canvas.height = currentCanvas.height;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(currentCanvas, 0, 0);
+                images[index] = dataURLtoFile(canvas.toDataURL(formatSelect.value), image.name);
+            };
+        }
+    });
+}
+
+function downloadImage() {
+    const quality = parseFloat(qualitySlider.value);
+    const canvas = cropper.getCroppedCanvas();
+    const dataURL = canvas.toDataURL(formatSelect.value, quality);
     const link = document.createElement('a');
-    link.download = `edited_image.${format}`;
-    link.href = currentImage.src;
+    link.download = `edited_image.${formatSelect.value.split('/')[1]}`;
+    link.href = dataURL;
     link.click();
-});
+}
 
-const editBtn = document.getElementById('editBtn');
+function updateQualityValue() {
+    qualityValue.textContent = qualitySlider.value;
+}
 
-// Add any other necessary code here
+function updateCropAspectRatio() {
+    const ratio = aspectRatioSelect.value;
+    if (ratio === 'free') {
+        cropper.setAspectRatio(NaN);
+    } else {
+        const [width, height] = ratio.split(':').map(Number);
+        cropper.setAspectRatio(width / height);
+    }
+}
 
-editBtn.addEventListener('click', function() {
-    window.location.href = 'edit.html';
-});
+function dataURLtoFile(dataurl, filename) {
+    let arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+}
+
+toggleEditControls();

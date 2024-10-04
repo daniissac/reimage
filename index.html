@@ -3,44 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reimage</title>
+    <title>Reimage - Image Editor</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 </head>
 <body>
     <div class="container">
         <h1>Reimage</h1>
-        <input type="file" id="imageUpload" accept="image/*">
-        <div id="editOptions" style="display: none;">
-            <h2>Edit Options</h2>
-            <div>
-                <label for="formatSelect">Format:</label>
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*" multiple>
+            <label for="imageUpload" class="upload-btn">Choose Files</label>
+        </div>
+        <div id="imagePreview" class="image-preview"></div>
+        <div id="editingInterface" class="editing-interface">
+            <div class="edit-controls">
                 <select id="formatSelect">
-                    <option value="jpeg">JPEG</option>
-                    <option value="png">PNG</option>
-                    <option value="webp">WebP</option>
+                    <option value="image/jpeg">JPEG</option>
+                    <option value="image/png">PNG</option>
+                    <option value="image/webp">WebP</option>
                 </select>
-            </div>
-            <div>
-                <label for="editSelect">Edit:</label>
-                <select id="editSelect">
+                <select id="editTypeSelect">
                     <option value="resize">Resize</option>
                     <option value="crop">Crop</option>
                 </select>
+                <div id="resizeControls">
+                    <input type="number" id="widthInput" placeholder="Width">
+                    <input type="number" id="heightInput" placeholder="Height">
+                </div>
+                <div id="cropControls">
+                    <select id="aspect-ratio-select">
+                        <option value="1:1">Instagram Post (1:1)</option>
+                        <option value="16:9">Twitter Header (16:9)</option>
+                        <option value="4:5">Instagram Portrait (4:5)</option>
+                        <option value="free">Free</option>
+                    </select>
+                </div>
+                <div id="text-overlay-controls">
+                    <input type="text" id="overlay-text" placeholder="Enter text">
+                    <select id="font-select">
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                    </select>
+                    <input type="number" id="font-size" min="8" max="72" value="24">
+                    <input type="color" id="font-color" value="#000000">
+                </div>
+                <button id="applyEdit">Apply Edit</button>
+                <button id="undoBtn">Undo</button>
+                <button id="redoBtn">Redo</button>
+                <button id="applyToAllBtn">Apply to All</button>
             </div>
-            <div id="resizeOptions" style="display: none;">
-                <label for="width">Width:</label>
-                <input type="number" id="width" min="1">
-                <label for="height">Height:</label>
-                <input type="number" id="height" min="1">
-            </div>
-            <div id="cropOptions" style="display: none;">
-                <!-- Cropper.js will handle this -->
-            </div>
-            <button id="applyEdit">Apply Edit</button>
+            <div id="imageContainer"></div>
         </div>
-        <img id="imagePreview" style="display: none;">
-        <button id="editImage" style="display: none;">Edit Image</button>
-        <button id="downloadImage" style="display: none;">Download</button>
+        <div class="download-section">
+            <input type="range" id="quality-slider" min="0" max="1" step="0.1" value="0.8">
+            <label for="quality-slider">Export Quality: <span id="qualityValue">0.8</span></label>
+            <button id="downloadBtn">Download</button>
+        </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="script.js"></script>
