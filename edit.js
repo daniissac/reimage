@@ -1,11 +1,14 @@
 const previewImage = document.getElementById('previewImage');
 const resizeBtn = document.getElementById('resizeBtn');
+const cropBtn = document.getElementById('cropBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const backBtn = document.getElementById('backBtn');
 const resizeWidth = document.getElementById('resizeWidth');
 const resizeHeight = document.getElementById('resizeHeight');
 const widthUnit = document.getElementById('widthUnit');
 const heightUnit = document.getElementById('heightUnit');
+
+let cropper;
 
 // Load the current image from localStorage
 previewImage.src = localStorage.getItem('currentImage');
@@ -21,22 +24,45 @@ function convertToPx(value, unit) {
     }
 }
 
+previewImage.onload = function() {
+    cropper = new Cropper(previewImage, {
+        aspectRatio: NaN,
+        viewMode: 1,
+    });
+};
+
 resizeBtn.addEventListener('click', function() {
     const width = convertToPx(parseFloat(resizeWidth.value), widthUnit.value);
     const height = convertToPx(parseFloat(resizeHeight.value), heightUnit.value);
     
     if (width && height) {
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(previewImage, 0, 0, width, height);
+        const canvas = cropper.getCroppedCanvas({
+            width: width,
+            height: height
+        });
         const resizedImageData = canvas.toDataURL('image/png');
-        previewImage.src = resizedImageData;
         localStorage.setItem('currentImage', resizedImageData);
+        previewImage.src = resizedImageData;
+        cropper.destroy();
+        cropper = new Cropper(previewImage, {
+            aspectRatio: NaN,
+            viewMode: 1,
+        });
     } else {
         alert('Please enter both width and height.');
     }
+});
+
+cropBtn.addEventListener('click', function() {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    const croppedImageData = croppedCanvas.toDataURL('image/png');
+    localStorage.setItem('currentImage', croppedImageData);
+    previewImage.src = croppedImageData;
+    cropper.destroy();
+    cropper = new Cropper(previewImage, {
+        aspectRatio: NaN,
+        viewMode: 1,
+    });
 });
 
 downloadBtn.addEventListener('click', function() {

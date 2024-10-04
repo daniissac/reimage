@@ -29,3 +29,11 @@ cropBtn.addEventListener('click', () => {
 formatBtn.addEventListener('click', () => {
     window.location.href = 'format.html';
 });
+
+const editBtn = document.getElementById('editBtn');
+
+// Add any other necessary code here
+
+editBtn.addEventListener('click', function() {
+    window.location.href = 'edit.html';
+});

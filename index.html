@@ -3,22 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReImage</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Reimage</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>ReImage</h1>
-        <input type="file" id="imageUpload" accept="image/*">
-        <div id="imageContainer">
-            <img id="previewImage" src="" alt="Uploaded image preview">
-        </div>
-        <div id="optionsContainer" style="display:none;">
-            <button id="resizeBtn" class="option-btn">Resize</button>
-            <button id="cropBtn" class="option-btn">Crop</button>
-            <button id="formatBtn" class="option-btn">Change Format</button>
-        </div>
-    </div>
+    <h1>Reimage</h1>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="editBtn">Edit Image</button>
+    
     <script src="script.js"></script>
 </body>
 </html>
