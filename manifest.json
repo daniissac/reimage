@@ -1,0 +1,8 @@
+{
+  "name": "Reimage",
+  "short_name": "Reimage",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3498db"
+}
